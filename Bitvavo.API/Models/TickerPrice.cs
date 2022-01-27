@@ -1,0 +1,21 @@
+//
+// TickerPrice.cs
+//
+// Trevi Awater
+// 27-01-2022
+//
+// © Bitvavo.API
+//
+
+using Newtonsoft.Json;
+
+namespace Bitvavo.API.Models;
+
+public class TickerPrice
+{
+    [JsonProperty("market")]
+    public string Market { get; set; }
+
+    [JsonProperty("price")]
+    public double Price { get; set; }
+}
