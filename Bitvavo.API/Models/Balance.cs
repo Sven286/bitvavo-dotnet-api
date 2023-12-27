@@ -21,4 +21,9 @@ public class Balance
 
     [JsonProperty("inOrder")]
     public double InOrder { get; set; }
+
+    public override string ToString()
+    {
+        return $"{{Balance: {Available} {Symbol} (InOrder={InOrder})}}";
+    }
 }

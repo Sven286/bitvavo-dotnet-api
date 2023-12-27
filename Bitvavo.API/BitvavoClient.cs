@@ -14,6 +14,7 @@ using Bitvavo.API.Interfaces;
 using Bitvavo.API.Models;
 using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Extensions;
 
 namespace Bitvavo.API;
 
@@ -95,6 +96,8 @@ public class BitvavoClient : IBitvavoClient
         return request;
     }
 
+
+
     private async Task<IRestResponse<TimeResponse>> GetTime()
     {
         var request = new RestRequest("time", Method.GET);
@@ -111,6 +114,28 @@ public class BitvavoClient : IBitvavoClient
         return await _restClient.ExecuteAsync<TickerPrice>(request);
     }
 
+    /// <summary>
+    /// Retrieve the list of bids and asks for market. 
+    /// That is, the buy and sell orders made by all Bitvavo users in a specific market. 
+    /// The orders in the return parameters are sorted by price.
+    /// </summary>
+    /// <param name="market"></param>
+    /// <returns></returns>
+    public async Task<IRestResponse<Candle>> GetBook(string market)
+    {
+        var request = new RestRequest($"{market}/book", Method.GET);
+
+        //request.AddQueryParameter(nameof(market), market);
+        request = await AddSignatureToRequest(request);
+
+        return await _restClient.ExecuteAsync<Candle>(request);
+    }
+
+    /// <summary>
+    /// Personal Trades for your account
+    /// </summary>
+    /// <param name="market"></param>
+    /// <returns></returns>
     public async Task<IRestResponse<List<Trade>>> GetTrades(string market)
     {
         var request = new RestRequest("trades", Method.GET);
@@ -121,6 +146,80 @@ public class BitvavoClient : IBitvavoClient
         return await _restClient.ExecuteAsync<List<Trade>>(request);
     }
 
+    public async Task<IRestResponse<List<Trade>>> GetPublicTrades(string market, DateTimeOffset? start = null)
+    {
+        var request = new RestRequest($"{market}/trades", Method.GET);
+
+        //request.AddQueryParameter(nameof(market), market);
+
+        if (start.HasValue)
+        {
+            request.AddQueryParameter("start", start.Value.ToUnixTimeMilliseconds().ToString());
+        }
+
+        request = await AddSignatureToRequest(request);
+
+        return await _restClient.ExecuteAsync<List<Trade>>(request);
+    }
+
+    public async Task<IRestResponse<List<Candle>>> GetCandles(string market, CandleInterval interval, DateTimeOffset? start = null, DateTimeOffset? end = null)
+    {
+        var request = new RestRequest($"{market}/candles", Method.GET);
+
+        var ci = interval.ToString().Substring(1);
+        request.AddQueryParameter("interval", ci);
+
+        if (start.HasValue)
+        {
+            request.AddQueryParameter("start", start.Value.ToUnixTimeMilliseconds().ToString());
+        }
+
+        if (end.HasValue)
+        {
+            request.AddQueryParameter("end", end.Value.ToUnixTimeMilliseconds().ToString());
+        }
+
+        request = await AddSignatureToRequest(request);
+
+        var parts = await _restClient.ExecuteAsync<List<List<string>>>(request);
+
+        var result = new RestResponse<List<Candle>>();
+        result.Content = parts.Content;
+        result.ContentLength = parts.ContentLength;
+        result.ContentEncoding = parts.ContentEncoding;
+        result.ContentType = parts.ContentType;
+        //result.Cookies = parts.Cookies
+        result.ErrorException = parts.ErrorException;
+        result.ErrorMessage = parts.ErrorMessage;
+        //result.IsSuccessful = parts.IsSuccessful;
+        result.ProtocolVersion = parts.ProtocolVersion;
+        result.RawBytes = parts.RawBytes;
+        result.Request = parts.Request;
+        result.ResponseStatus = parts.ResponseStatus;
+        result.Server = parts.Server;
+        result.StatusCode = parts.StatusCode;
+        result.StatusDescription = parts.StatusDescription;
+
+        result.Data = new List<Candle>();
+        foreach (var item in parts.Data)
+        {
+            var candle = new Candle(item);
+            result.Data.Add(candle);
+        }
+
+        return result;
+    }
+
+
+    public async Task<IRestResponse<List<Order>>> GetOpenOrders()
+    {
+        var request = new RestRequest("ordersOpen", Method.GET);
+
+        request = await AddSignatureToRequest(request);
+
+        return await _restClient.ExecuteAsync<List<Order>>(request);
+    }
+
     public async Task<IRestResponse<List<Balance>>> GetBalances()
     {
         var request = new RestRequest("balance", Method.GET);
@@ -128,6 +227,29 @@ public class BitvavoClient : IBitvavoClient
         request = await AddSignatureToRequest(request);
 
         return await _restClient.ExecuteAsync<List<Balance>>(request);
+    }
+
+    public async Task<IRestResponse<List<MarketItem>>> GetMarkets(string? market = null)
+    {
+        var request = new RestRequest("markets", Method.GET);
+
+        if (market != null)
+        {
+            request.AddQueryParameter("market", market);
+        }
+
+        request = await AddSignatureToRequest(request);
+
+        return await _restClient.ExecuteAsync<List<MarketItem>>(request);
+    }
+
+    public async Task<IRestResponse<List<Asset>>> GetAssets()
+    {
+        var request = new RestRequest("assets", Method.GET);
+
+        request = await AddSignatureToRequest(request);
+
+        return await _restClient.ExecuteAsync<List<Asset>>(request);
     }
 
     public async Task<IRestResponse<Order>> PlaceOrder(Order order)

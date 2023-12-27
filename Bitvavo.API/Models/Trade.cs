@@ -45,4 +45,10 @@ public class Trade
 
     [JsonProperty("settled")]
     public bool Settled { get; set; }
+
+    public override string ToString()
+    {
+        var t = DateTimeOffset.FromUnixTimeMilliseconds(Timestamp);
+        return $"{{Trade: {t} {Side} {Amount} {Market} @ {Price} ({Fee} {FeeCurrency} Fee, Taker={Taker}, Settled={Settled}, Id={Id})}}";
+    }
 }

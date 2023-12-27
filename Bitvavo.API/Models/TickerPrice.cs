@@ -18,4 +18,9 @@ public class TickerPrice
 
     [JsonProperty("price")]
     public double Price { get; set; }
+
+    public override string ToString()
+    {
+        return $"{{TickerPrice: {Market} {Price}}}";
+    }
 }

@@ -48,4 +48,9 @@ public class Order
 
     [JsonProperty("responseRequired")]
     public bool ResponseRequired { get; set; }
+
+    public override string ToString()
+    {
+        return $"{{Order: {Side} {Amount} {Market} (Q={AmountQuote}) @ {Price} T={OrderType}}}";
+    }
 }
