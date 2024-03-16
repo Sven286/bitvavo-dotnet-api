@@ -35,7 +35,8 @@ public class Asset
     //[JsonProperty("orderTypes")]
     //public List<string> OrderTypes { get; set; }
 
-
+    [JsonIgnore]
+    public virtual ICollection<MarketItem> MarketItems { get; set; }
 
     public override string ToString()
     {

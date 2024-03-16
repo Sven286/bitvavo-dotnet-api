@@ -17,13 +17,13 @@ public class Balance
     public string Symbol { get; set; }
 
     [JsonProperty("available")]
-    public double Available { get; set; }
+    public decimal Available { get; set; }
 
     [JsonProperty("inOrder")]
-    public double InOrder { get; set; }
+    public decimal InOrder { get; set; }
 
     public override string ToString()
     {
-        return $"{{Balance: {Available} {Symbol} (InOrder={InOrder})}}";
+        return $"{{Balance: {Available} {Symbol} (InOrders={InOrder})}}";
     }
 }

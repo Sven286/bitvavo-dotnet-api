@@ -259,8 +259,8 @@ public class BitvavoClient : IBitvavoClient
         dynamic payload = new
         {
             market = order.Market,
-            side = order.Side,
-            orderType = order.OrderType,
+            side = order.Side.ToString(),
+            orderType = order.OrderType.ToString(),
             amount = order.Amount
         };
 

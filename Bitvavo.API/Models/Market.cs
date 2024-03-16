@@ -37,10 +37,10 @@ public class MarketItem
     [JsonProperty("orderTypes")]
     public List<string> OrderTypes { get; set; }
 
-
+    public virtual Asset Asset { get; set; }
 
     public override string ToString()
     {
-        return $"{{Market: {Market} ({Status})}}";
+        return $"{{Market: {Market} ({Status}) Asset={Asset?.ToString() ?? "<NULL>"}}}";
     }
 }

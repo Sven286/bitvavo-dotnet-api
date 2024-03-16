@@ -26,13 +26,13 @@ public class Order
     public OrderType OrderType { get; set; }
 
     [JsonProperty("amount")]
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
 
     [JsonProperty("price")]
-    public double Price { get; set; }
+    public decimal Price { get; set; }
 
     [JsonProperty("amountQuote")]
-    public double AmountQuote { get; set; }
+    public decimal AmountQuote { get; set; }
 
     [JsonProperty("timeInForce")]
     public string TimeInForce { get; set; }
